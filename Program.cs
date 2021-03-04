@@ -12,11 +12,11 @@ namespace DataFlow
         static int Main(string[] args)
         {
             // Parse and test command line arguments
-            Parser argument = new Parser();
+            Parser parser = new Parser();
 
-            if ((argument.ParsingArguments(args)) == 1) {
-                Console.WriteLine("\nUsage: DataFlow.exe <-linux|-windows> <excelfile>");
-                return 1;
+            if ((parser.ParsingArguments(args)) == 1) {
+                Console.WriteLine("\nUsage: DataFlow.exe -linux | -windows excelfile.xlsx");
+                return (int)Parsing.Error;
             }
 
             // Add Dependency Injection to this project
@@ -57,7 +57,7 @@ namespace DataFlow
                 ConverterService flow = new ConverterService(converter);
                 flow.CreateScript(worksheet, rowcount, colcount);
             }
-            return 0;
+            return (int)Parsing.Success;
         }
     }
 }

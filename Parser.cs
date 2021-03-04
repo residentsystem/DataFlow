@@ -1,9 +1,44 @@
 using System;
+using DataFlow.Models;
 
 namespace DataFlow
 {
     class Parser 
     {
+        public int ParsingArguments(String[] args)
+        {
+            // The right amount of arguments have to be supplied.
+            if (args.Length < 2) {
+                Console.WriteLine("\nMissing argument: Please supply all arguments.");
+
+                if (args.Length == 1)
+                {
+                    ParsingSingleString(args[0]);
+                }
+
+                return (int)Parsing.Error;
+            }
+            else if (args.Length > 2) {
+                Console.WriteLine("\nToo many arguments: Please supply a maximum of 2 arguments.");
+                ParsingMultipleString(args);
+
+                return (int)Parsing.Error;
+            }
+
+            // Validate all values if the correct amount of arguments have been supplied.
+            if (args.Length == 2) {
+
+                if (!(args[0] == "-windows" || args[0] == "-linux")) {
+                    Console.WriteLine("\nValue Error: Please specify a valid argument.");
+                    ParsingMultipleString(args);
+
+                    return (int)Parsing.Error;
+                }
+            }
+            // Return if parsed correctly
+            return (int)Parsing.Success;
+        }
+
         public void ParsingMultipleString(String[] args)
         {
             // Test if multiple arguments were supplied as a string.
@@ -26,37 +61,6 @@ namespace DataFlow
             if (IsArgumentString){
                 Console.WriteLine("Type Error: The argument must be a string.");
             } 
-        }
-
-        public int ParsingArguments(String[] args)
-        {
-            // The right amount of arguments have to be supplied.
-            if (args.Length < 2) {
-                Console.WriteLine("\nMissing argument: Please supply all arguments.");
-
-                if (args.Length == 1)
-                {
-                    ParsingSingleString(args[0]);
-                }
-                return 1;
-            }
-            else if (args.Length > 2) {
-                Console.WriteLine("\nToo many arguments: Please supply a maximum of 2 arguments.");
-                ParsingMultipleString(args);
-                return 1;
-            }
-
-            // Validate all values if the correct amount of arguments have been supplied.
-            if (args.Length == 2) {
-
-                if (!(args[0] == "-windows" || args[0] == "-linux")) {
-                    Console.WriteLine("\nValue Error: Please specify a valid command.");
-                    ParsingMultipleString(args);
-                    return 1;
-                }
-            }
-            // Return if parsed correctly
-            return 0;
         }
     }
 }
