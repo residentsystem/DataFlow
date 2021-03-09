@@ -16,8 +16,21 @@ namespace DataFlow.Converters
         private string delimiter;
 
         private string folderpath;
-        
-        List<string> ListOfCellValues = new List<string>();
+
+        Dictionary<string, List<string>> WorkSheet = new Dictionary<string, List<string>>()
+        {
+            { "Header", new List<string>() },
+            { "Flow", new List<string>() }
+        };
+
+        Dictionary<string, String[]> Cell = new Dictionary<string, String[]>()
+        {
+            { "SourceName", new string[5] },
+            { "DestinationName", new string[5] },
+            { "DestinationIP", new string[5] },
+            { "Protocol", new string[5] },
+            { "Port", new string[5] }
+        };
 
         public LinuxConverter(string filepath, string delimiter, string folderpath)
         {
@@ -40,36 +53,35 @@ namespace DataFlow.Converters
             {
                 for (int col = 1; col <= colcount; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString().Replace(" ", String.Empty));                       
+                    WorkSheet["Header"].Add(worksheet.Cells[row, col].Value.ToString().Replace(" ", String.Empty));                       
                 }
             }
 
             // Append worksheet first row to csv string builder
             StringBuilder csvbuilder = new StringBuilder();
-            csvbuilder.AppendLine(string.Join(csv.Delimiter, ListOfCellValues[1], ListOfCellValues[2], ListOfCellValues[3], ListOfCellValues[5], ListOfCellValues[0], "Status"));
-            ListOfCellValues.Clear();
+            csvbuilder.AppendLine(string.Join(csv.Delimiter, WorkSheet["Header"][1], WorkSheet["Header"][2], WorkSheet["Header"][3], WorkSheet["Header"][5], WorkSheet["Header"][0], "Status"));
  
             // Iterate through worksheet from second row and get values of individual cells
             for (int row = 2; row <= rowcount; row++)
             {
                 for (int col = 1; col <= colcount; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                    
+                    WorkSheet["Flow"].Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                    
                 }
 
-                string flow = ListOfCellValues[0];
+                string flow = WorkSheet["Flow"][0];
 
                 // Split values contained in each cells into separate arrays    
-                String[] SourceNames = ListOfCellValues[1].Split(delimiter);
-                String[] DestinationNames = ListOfCellValues[2].Split(delimiter);
-                String[] DestinationIPs = ListOfCellValues[3].Split(delimiter);
-                String[] Protocols = ListOfCellValues[4].Split(delimiter);
-                String[] Ports = ListOfCellValues[5].Split(delimiter);
+                Cell["SourceName"] = WorkSheet["Flow"][1].Split(delimiter);
+                Cell["DestinationName"] = WorkSheet["Flow"][2].Split(delimiter);
+                Cell["DestinationIP"] = WorkSheet["Flow"][3].Split(delimiter);
+                Cell["Protocol"] = WorkSheet["Flow"][4].Split(delimiter);
+                Cell["Port"] = WorkSheet["Flow"][5].Split(delimiter);
 
                 // Combine different length and iterate through all possibilities  
-                int sourcecount = SourceNames.Length;
-                int destinationcount = DestinationIPs.Length;
-                int portcount = Ports.Length;
+                int sourcecount = Cell["SourceName"].Length;
+                int destinationcount = Cell["DestinationIP"].Length;
+                int portcount = Cell["Port"].Length;
 
                 // Append all lines to build the csv file
                 for (int source = 0; source < sourcecount; source++)
@@ -78,11 +90,12 @@ namespace DataFlow.Converters
                     {
                         for (int port = 0; port < portcount; port++)
                         {
-                            csvbuilder.AppendLine(string.Join(csv.Delimiter, SourceNames[source], DestinationNames[destination], DestinationIPs[destination], Ports[port], flow) + $"{csv.Delimiter}");
+                            csvbuilder.AppendLine(string.Join(csv.Delimiter, Cell["SourceName"][source], Cell["DestinationName"][destination], Cell["DestinationIP"][destination], Cell["Port"][port], flow) + $"{csv.Delimiter}");
                         }
                     }
                 }
-                ListOfCellValues.Clear();
+                WorkSheet["Header"].Clear();
+                WorkSheet["Flow"].Clear();
             }
 
             // Write to files from string builder  
@@ -102,10 +115,9 @@ namespace DataFlow.Converters
             {
                 for (int col = 1; col <= colcount; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString());                        
+                    WorkSheet["Header"].Add(worksheet.Cells[row, col].Value.ToString());                        
                 }
             }
-            ListOfCellValues.Clear();
 
             // Append script headers
             StringBuilder scriptbuilder = new StringBuilder();
@@ -117,22 +129,22 @@ namespace DataFlow.Converters
             {
                 for (int col = 1; col <= colcount; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                       
+                    WorkSheet["Flow"].Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                       
                 }
 
-                string flow = ListOfCellValues[0];
+                string flow = WorkSheet["Flow"][0];
 
                 // Split values contained in each cells into separate arrays    
-                String[] SourceNames = ListOfCellValues[1].Split(delimiter);
-                String[] DestinationNames = ListOfCellValues[2].Split(delimiter);
-                String[] DestinationIPs = ListOfCellValues[3].Split(delimiter);
-                String[] Protocols = ListOfCellValues[4].Split(delimiter);
-                String[] Ports = ListOfCellValues[5].Split(delimiter);
+                Cell["SourceName"] = WorkSheet["Flow"][1].Split(delimiter);
+                Cell["DestinationName"] = WorkSheet["Flow"][2].Split(delimiter);
+                Cell["DestinationIP"] = WorkSheet["Flow"][3].Split(delimiter);
+                Cell["Protocol"] = WorkSheet["Flow"][4].Split(delimiter);
+                Cell["Port"] = WorkSheet["Flow"][5].Split(delimiter);
 
                 // Combine different length and iterate through all possibilities
-                int sourcecount = SourceNames.Length;
-                int destinationcount = DestinationIPs.Length;
-                int portcount = Ports.Length;
+                int sourcecount = Cell["SourceName"].Length;
+                int destinationcount = Cell["DestinationIP"].Length;
+                int portcount = Cell["Port"].Length;
 
                 // Append script headers
                 scriptbuilder.Append($"## WifLine: {flow}\n");
@@ -149,12 +161,13 @@ namespace DataFlow.Converters
                     {
                         for (int port = 0; port < portcount; port++)
                         {
-                            scriptbuilder.Append($"echo \"Flow: {flow} - Source: {SourceNames[source]} - Destination: {DestinationNames[destination]} ({DestinationIPs[destination]}) - Port: {Ports[port]} - Date: $(date)\" >> Wifline{flow}_Result.txt\n");
-                            scriptbuilder.Append($"./portwass check -p tcp {DestinationIPs[destination]} {Ports[port]} >> Wifline{flow}_Result.txt\n");
+                            scriptbuilder.Append($"echo \"Flow: {flow} - Source: {Cell["SourceName"][source]} - Destination: {Cell["DestinationName"][destination]} ({Cell["DestinationIP"][destination]}) - Port: {Cell["Port"][port]} - Date: $(date)\" >> Wifline{flow}_Result.txt\n");
+                            scriptbuilder.Append($"./portwass check -p tcp {Cell["DestinationIP"][destination]} {Cell["Port"][port]} >> Wifline{flow}_Result.txt\n");
                         }
                     }
                 }
-                ListOfCellValues.Clear();
+                WorkSheet["Header"].Clear();
+                WorkSheet["Flow"].Clear();
             }              
 
             // Write to the file from but first remove new line  
@@ -174,22 +187,22 @@ namespace DataFlow.Converters
             {
                 for (int col = 1; col <= colcount; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                        
+                    WorkSheet["Flow"].Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                        
                 }
 
-                string flow = ListOfCellValues[0];
+                string flow = WorkSheet["Flow"][0];
 
                 // Split values contained in each cells into separate arrays    
-                String[] SourceNames = ListOfCellValues[1].Split(delimiter);
-                String[] DestinationNames = ListOfCellValues[2].Split(delimiter);
-                String[] DestinationIPs = ListOfCellValues[3].Split(delimiter);
-                String[] Protocols = ListOfCellValues[4].Split(delimiter);
-                String[] Ports = ListOfCellValues[5].Split(delimiter);
+                Cell["SourceName"] = WorkSheet["Flow"][1].Split(delimiter);
+                Cell["DestinationName"] = WorkSheet["Flow"][2].Split(delimiter);
+                Cell["DestinationIP"] = WorkSheet["Flow"][3].Split(delimiter);
+                Cell["Protocol"] = WorkSheet["Flow"][4].Split(delimiter);
+                Cell["Port"] = WorkSheet["Flow"][5].Split(delimiter);
 
                 // Combine different length and iterate through all possibilities
-                int sourcecount = SourceNames.Length;
-                int destinationcount = DestinationIPs.Length;
-                int portcount = Ports.Length;
+                int sourcecount = Cell["SourceName"].Length;
+                int destinationcount = Cell["DestinationIP"].Length;
+                int portcount = Cell["Port"].Length;
 
                 // Append all lines to build the script
                 for (int source = 0; source < sourcecount; source++)
@@ -200,13 +213,14 @@ namespace DataFlow.Converters
                         {
                             // Get list of all source servers 
                             // Build list of port scanner tool commands 
-                            ListOfSourceNames.Add(SourceNames[source]);
-                            ListOfPortQry.Add(new KeyValuePair<string, string>(SourceNames[source], $"echo \"Flow: {flow} - Source: {SourceNames[source]} - Destination: {DestinationNames[destination]} ({DestinationIPs[destination]}) - Port: {Ports[port]} - Date: $(date)\" >> {SourceNames[source]}_Result.txt"));
-                            ListOfPortQry.Add(new KeyValuePair<string, string>(SourceNames[source], $"./portwass check -p tcp {DestinationIPs[destination]} {Ports[port]} >> {SourceNames[source]}_Result.txt"));
+                            ListOfSourceNames.Add(Cell["SourceName"][source]);
+                            ListOfPortQry.Add(new KeyValuePair<string, string>(Cell["SourceName"][source], $"echo \"Flow: {flow} - Source: {Cell["SourceName"][source]} - Destination: {Cell["DestinationName"][destination]} ({Cell["DestinationIP"][destination]}) - Port: {Cell["Port"][port]} - Date: $(date)\" >> {Cell["SourceName"][source]}_Result.txt"));
+                            ListOfPortQry.Add(new KeyValuePair<string, string>(Cell["SourceName"][source], $"./portwass check -p tcp {Cell["DestinationIP"][destination]} {Cell["Port"][port]} >> {Cell["SourceName"][source]}_Result.txt"));
                         }
                     }
                 }
-                ListOfCellValues.Clear();
+                WorkSheet["Header"].Clear();
+                WorkSheet["Flow"].Clear();
             }
 
             // Build a list of distinct server names and return the number of elements 
@@ -289,18 +303,18 @@ namespace DataFlow.Converters
             {
                 for (int col = 2; col < 3; col++)
                 {
-                    ListOfCellValues.Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                        
+                    WorkSheet["Flow"].Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                        
                 }
 
                 // Remove the delimiter from the list and return the number of elements    
-                String[] SourceNames = ListOfCellValues[0].Split(delimiter);
-                int sourcecount = SourceNames.Length;
+                Cell["SourceName"] = WorkSheet["Flow"][0].Split(delimiter);
+                int sourcecount = Cell["SourceName"].Length;
 
                 for (int source = 0; source < sourcecount; source++)
                 {
-                    ListOfSourceNames.Add(SourceNames[source]);
+                    ListOfSourceNames.Add(Cell["SourceName"][source]);
                 }
-                ListOfCellValues.Clear();
+                WorkSheet["Flow"].Clear();
             }
 
             ListOfDistinctSourceNames = ListOfSourceNames.Distinct().ToList();
