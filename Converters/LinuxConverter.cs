@@ -26,6 +26,7 @@ namespace DataFlow.Converters
         Dictionary<string, String[]> Flow = new Dictionary<string, String[]>()
         {
             { "SourceName", new string[5] },
+            { "SourceIP", new string[5] },
             { "DestinationName", new string[5] },
             { "DestinationIP", new string[5] },
             { "Protocol", new string[5] },
@@ -59,7 +60,7 @@ namespace DataFlow.Converters
 
             // Append first row to csv string builder
             StringBuilder csvbuilder = new StringBuilder();
-            csvbuilder.AppendLine(string.Join(csv.Delimiter, WorkSheet["Header"][1], WorkSheet["Header"][2], WorkSheet["Header"][3], WorkSheet["Header"][5], WorkSheet["Header"][0], "Status"));
+            csvbuilder.AppendLine(string.Join(csv.Delimiter, WorkSheet["Header"][1], WorkSheet["Header"][3], WorkSheet["Header"][4], WorkSheet["Header"][6], WorkSheet["Header"][0]));
  
             // Iterate through worksheet starting on second row and get all data
             for (int row = 2; row <= rowcount; row++)
@@ -197,7 +198,7 @@ namespace DataFlow.Converters
                         {
                             // Get list of all source servers build list of port scanner tool commands 
                             ListOfSourceNames.Add(Flow["SourceName"][source]);
-                            ListOfPortQry.Add(new KeyValuePair<string, string>(Flow["SourceName"][source], $"echo \"Flow: {flow} - Source: {Flow["SourceName"][source]} - Destination: {Flow["DestinationName"][destination]} ({Flow["DestinationIP"][destination]}) - Port: {Flow["Port"][port]} - Date: $(date)\" >> {Flow["SourceName"][source]}_Result.txt"));
+                            ListOfPortQry.Add(new KeyValuePair<string, string>(Flow["SourceName"][source], $"echo \"Flow: {flow} - Source: {Flow["SourceName"][source]} ({Flow["SourceIP"][source]}) - Destination: {Flow["DestinationName"][destination]} ({Flow["DestinationIP"][destination]}) - Port: {Flow["Port"][port]} - Date: $(date)\" >> {Flow["SourceName"][source]}_Result.txt"));
                             ListOfPortQry.Add(new KeyValuePair<string, string>(Flow["SourceName"][source], $"./portwass check -p tcp {Flow["DestinationIP"][destination]} {Flow["Port"][port]} >> {Flow["SourceName"][source]}_Result.txt"));
                         }
                     }
@@ -328,10 +329,11 @@ namespace DataFlow.Converters
         public void SplitFlow(Dictionary<string, List<string>> WorkSheet, ref Dictionary<string, String[]> Flow)
         {
             Flow["SourceName"] = WorkSheet["Data"][1].Split(delimiter);
-            Flow["DestinationName"] = WorkSheet["Data"][2].Split(delimiter);
-            Flow["DestinationIP"] = WorkSheet["Data"][3].Split(delimiter);
-            Flow["Protocol"] = WorkSheet["Data"][4].Split(delimiter);
-            Flow["Port"] = WorkSheet["Data"][5].Split(delimiter);
+            Flow["SourceIP"] = WorkSheet["Data"][2].Split(delimiter);
+            Flow["DestinationName"] = WorkSheet["Data"][3].Split(delimiter);
+            Flow["DestinationIP"] = WorkSheet["Data"][4].Split(delimiter);
+            Flow["Protocol"] = WorkSheet["Data"][5].Split(delimiter);
+            Flow["Port"] = WorkSheet["Data"][6].Split(delimiter);
         }
     }
 }

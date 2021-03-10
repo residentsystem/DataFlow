@@ -96,13 +96,14 @@ namespace DataFlow.Models
 
                 // Split multiple values contain in each cells into separate arrays    
                 String[] SourceNames = ListOfCellValues[1].Split(Delimiter);
-                String[] DestinationNames = ListOfCellValues[2].Split(Delimiter);
-                String[] DestinationIPs = ListOfCellValues[3].Split(Delimiter);
-                String[] Protocols = ListOfCellValues[4].Split(Delimiter);
-                String[] Ports = ListOfCellValues[5].Split(Delimiter);
+                String[] SourceIPs = ListOfCellValues[2].Split(Delimiter);
+                String[] DestinationNames = ListOfCellValues[3].Split(Delimiter);
+                String[] DestinationIPs = ListOfCellValues[4].Split(Delimiter);
+                String[] Protocols = ListOfCellValues[5].Split(Delimiter);
+                String[] Ports = ListOfCellValues[6].Split(Delimiter);
 
                 // Destination and ip cells must contain the same number of elements 
-                if (DestinationNames.Length != DestinationIPs.Length)
+                if (SourceNames.Length != SourceIPs.Length || DestinationNames.Length != DestinationIPs.Length)
                 {
                     Console.WriteLine($"\nError in file: {excelfile.Name} WifLine: {flow}: Destination column and Ip column are of different length.");
                     Console.WriteLine($"Please make sure that both columns contain the same amount of items.");
