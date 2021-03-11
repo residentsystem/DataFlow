@@ -63,8 +63,8 @@ To start working on this project you need to download and install the following 
 
 1. Create the directory on your local machine where you want this project to reside.
 
-> \\> mkdir C:\Project\DataFlowCore<br>
-> \\> cd .\Project\DataFlowCore 
+> \\> mkdir C:\Project\DataFlow<br>
+> \\> cd .\Project\DataFlow 
 
 2. Open your browser and navigate to Github. Access the main page of the <a href="https://github.com/residentsystem/DataFlow">repository</a>.
 
@@ -75,7 +75,7 @@ To start working on this project you need to download and install the following 
 
 2. Select Download ZIP.
 
-3. Extract the ZIP file in your project folder (ex C:\Project\DataFlowCore).
+3. Extract the ZIP file in your project folder (ex C:\Project\DataFlow).
 
 #### Clone using git
 1. Under the repository name, click Clone or download.
@@ -84,7 +84,7 @@ To start working on this project you need to download and install the following 
 
 3. Open Git Bash.
 
-4. Navigate to the project directory where you want the cloned directory to be made (C:\Project\DataFlowCore).
+4. Navigate to the project directory where you want the cloned directory to be made (C:\Project\DataFlow).
 
 5. Type git clone, and then paste the URL you copied in Step 2.
 
@@ -96,7 +96,7 @@ To start working on this project you need to download and install the following 
 
 1. Change the current working directory to the project folder and open the project using Visual Studio Code.
 
-> \\> cd C:\Project\DataFlowCore\DataFlow<br>
+> \\> cd C:\Project\DataFlow<br>
 > \\> code . 
 
 2. Using VS Code, select Terminal -> New Terminal. Inside the terminal, run the application.
@@ -116,7 +116,7 @@ When you are done with development and testing, you will need to publish the app
 1. Create a folder where you wish to have the published files located. Change the current working directory to the project folder.
 
 > \\> mkdir C:\Publish\DataFlow<br>
-> \\> cd C:\Project\DataFlowCore\DataFlow
+> \\> cd C:\Project\DataFlow
 
 2. Run this command to Publish the application as a single .exe file.
 
@@ -125,9 +125,19 @@ When you are done with development and testing, you will need to publish the app
 3. Go to the publish folder and run the project exe.
 
 > \\> cd C:\Publish\DataFlow<br>
+
+### Create powershell scripts for flows to be tested on Windows machines:
 > \\> .\DataFlow.exe -windows .\ApplicationFlowsWindows.xlsx
 
-4. As before, the command should create a new folder (ApplicationFlowsWindows) that contain all the scripts.
+### Create bash scripts for flows to be tested on Linux machines:
+> \\> .\DataFlow.exe -linux .\ApplicationFlowsLinux.xlsx
+
+### Create csv file for all flows to be fed to another process or test script:
+> \\> .\DataFlow.exe -csv .\ApplicationFlowsWindows.xlsx 
+
+#### Note: If testing on a network that contain both Windows and Linux systems, an excel file for each is required.     
+
+4. The command will create a new folder (ApplicationFlowsWindows) that will contain all the files.
 
 ## Built With
 * Visual Studio Code - Code editor
