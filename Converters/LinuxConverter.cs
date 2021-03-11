@@ -9,7 +9,7 @@ using DataFlow.Interfaces;
 
 namespace DataFlow.Converters
 {
-    public class LinuxConverter : IConverterService
+    public class LinuxConverter : IConverterScriptService
     {
         private string filepath;
 
@@ -39,62 +39,6 @@ namespace DataFlow.Converters
             this.filepath = Path.GetFileNameWithoutExtension(filepath);
             this.delimiter = delimiter;
             this.folderpath = folderpath;
-        }
-
-        public void ConvertToCsv(ExcelWorksheet worksheet, int rowcount, int colcount)
-        {
-            Document csv = new Document($"./{folderpath}/{filepath}Rules.csv", "|");
-            FileInfo csvfile = new FileInfo(csv.FilePath);
-
-            // Create a new csv file if it does not exist
-            csv.CreateNew(csvfile);
-
-            // Iterate through worksheet first row and get all headers
-            for (int row = 1; row < 2; row++)
-            {
-                for (int col = 1; col <= colcount; col++)
-                {
-                    WorkSheet["Header"].Add(worksheet.Cells[row, col].Value.ToString().Replace(" ", String.Empty));                       
-                }
-            }
-
-            // Append first row to csv string builder
-            StringBuilder csvbuilder = new StringBuilder();
-            csvbuilder.AppendLine(string.Join(csv.Delimiter, WorkSheet["Header"][1], WorkSheet["Header"][3], WorkSheet["Header"][4], WorkSheet["Header"][6], WorkSheet["Header"][0]));
- 
-            // Iterate through worksheet starting on second row and get all data
-            for (int row = 2; row <= rowcount; row++)
-            {
-                for (int col = 1; col <= colcount; col++)
-                {
-                    WorkSheet["Data"].Add(worksheet.Cells[row, col].Value.ToString().Replace("\n", String.Empty));                    
-                }
-
-                // Split flows into different categories
-                SplitFlow(WorkSheet, ref Flow);
-
-                // Combine different length and iterate through all possible flows
-                int numberofsourcename = Flow["SourceName"].Length;
-                int numberofdestinationip = Flow["DestinationIP"].Length;
-                int numberofport = Flow["Port"].Length;
-
-                // Append all lines to build the csv file
-                for (int source = 0; source < numberofsourcename; source++)
-                {
-                    for (int destination = 0; destination < numberofdestinationip; destination++)
-                    {
-                        for (int port = 0; port < numberofport; port++)
-                        {
-                            csvbuilder.AppendLine(string.Join(csv.Delimiter, Flow["SourceName"][source], Flow["DestinationName"][destination], Flow["DestinationIP"][destination], Flow["Port"][port], WorkSheet["Data"][0]) + $"{csv.Delimiter}");
-                        }
-                    }
-                }
-                WorkSheet["Header"].Clear();
-                WorkSheet["Data"].Clear();
-            }
-
-            // Write to files from string builder  
-            File.WriteAllText(csv.FilePath, csvbuilder.ToString());
         }
 
         public void ConvertToScript(ExcelWorksheet worksheet, int rowcount, int colcount)
@@ -326,6 +270,7 @@ namespace DataFlow.Converters
                 Console.WriteLine("Creating server list failed: {0}", e.ToString());
             }
         }
+        
         public void SplitFlow(Dictionary<string, List<string>> WorkSheet, ref Dictionary<string, String[]> Flow)
         {
             Flow["SourceName"] = WorkSheet["Data"][1].Split(delimiter);

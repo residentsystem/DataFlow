@@ -9,8 +9,9 @@ namespace DataFlow.Converters
         {
             // Setup serviceCollection for Dependency Injection
             var serviceProvider = new ServiceCollection()
-            .AddSingleton<IConverterService, WindowsConverter>()
-            .AddSingleton<IConverterService, LinuxConverter>()
+            .AddSingleton<IConverterScriptService, WindowsConverter>()
+            .AddSingleton<IConverterScriptService, LinuxConverter>()
+            .AddSingleton<IConverterFileService, CsvConverter>()
             .BuildServiceProvider();
         }
     }

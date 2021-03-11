@@ -48,14 +48,20 @@ namespace DataFlow
             if (args[0] == "-windows") 
             {
                 WindowsConverter converter = new WindowsConverter(excel.FilePath, excel.Delimiter, directory.FolderName);
-                ConverterService flow = new ConverterService(converter);
-                flow.CreateScript(worksheet, rowcount, colcount);
+                ConverterScriptService service = new ConverterScriptService(converter);
+                service.CreateScript(worksheet, rowcount, colcount);
             }
             else if (args[0] == "-linux") 
             {
                 LinuxConverter converter = new LinuxConverter(excel.FilePath, excel.Delimiter, directory.FolderName);
-                ConverterService flow = new ConverterService(converter);
-                flow.CreateScript(worksheet, rowcount, colcount);
+                ConverterScriptService service = new ConverterScriptService(converter);
+                service.CreateScript(worksheet, rowcount, colcount);
+            }
+            else if (args[0] == "-csv") 
+            {
+                CsvConverter converter = new CsvConverter(excel.FilePath, excel.Delimiter, directory.FolderName);
+                ConverterFileService service = new ConverterFileService(converter);
+                service.CreateFile(worksheet, rowcount, colcount);
             }
             return (int)Parsing.Success;
         }

@@ -2,10 +2,8 @@ using OfficeOpenXml;
 
 namespace DataFlow.Interfaces
 {
-    public interface IConverterService
+    public interface IConverterScriptService
     {
-        void ConvertToCsv(ExcelWorksheet worksheet, int rowcount, int colcount);
-        
         void ConvertToScript(ExcelWorksheet worksheet, int rowcount, int colcount);
 
         void ConvertToMultipleScript(ExcelWorksheet worksheet, int rowcount, int colcount); 

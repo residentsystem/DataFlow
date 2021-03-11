@@ -28,7 +28,7 @@ namespace DataFlow
             // Validate all values if the correct amount of arguments have been supplied.
             if (args.Length == 2) {
 
-                if (!(args[0] == "-windows" || args[0] == "-linux")) {
+                if (!(args[0] == "-windows" || args[0] == "-linux" || args[0] == "-csv")) {
                     Console.WriteLine("\nValue Error: Please specify a valid argument.");
                     ParsingMultipleString(args);
 
